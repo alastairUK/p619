@@ -45,7 +45,7 @@ classdef P619
             % dkm         km       float    Path length
             % e2sflag     -        bool     If true:  Earth-to-space direction, 
             %                               If false: space-to-Earth direction
-            % p1          %        float    percentage of time for which atteunation due to atmospheric gases is not exceeded 
+            % p1          %        float    percentage of time for which attenuation due to atmospheric gases is not exceeded 
             % He	      km	   float    Height of Earth station (above mean sea level)
             % Hs          km       float    Height of space-based station (above mean sea level)
             % phi_e       deg      float    Elevation angle of the main beam of the earth based station antenna
@@ -305,9 +305,9 @@ classdef P619
             % g_o, g_w   -   specific attenuation due to dry air and water vapour
 
 
-            %% spectroscopic data for oxigen
+            %% spectroscopic data for oxygen
             %             f0        a1    a2     a3   a4     a5     a6
-            oxigen = [50.474214, 0.975, 9.651, 6.690, 0.0, 2.566, 6.850;
+            oxygen = [50.474214, 0.975, 9.651, 6.690, 0.0, 2.566, 6.850;
                 50.987745, 2.529, 8.653, 7.170, 0.0, 2.246, 6.800;
                 51.503360, 6.193, 7.709, 7.640, 0.0, 1.947, 6.729;
                 52.021429, 14.320, 6.819, 8.110, 0.0, 1.667, 6.640;
@@ -390,12 +390,12 @@ classdef P619
                 987.926764 134.6 .257 29.85 .68 4.550 .90;
                 1780.000000 17506. .952 196.3 2.00 24.15 5.00];
 
-            a1 = oxigen(:,2);
-            a2 = oxigen(:,3);
-            a3 = oxigen(:,4);
-            a4 = oxigen(:,5);
-            a5 = oxigen(:,6);
-            a6 = oxigen(:,7);
+            a1 = oxygen(:,2);
+            a2 = oxygen(:,3);
+            a3 = oxygen(:,4);
+            a4 = oxygen(:,5);
+            a5 = oxygen(:,6);
+            a6 = oxygen(:,7);
 
             b1 = vapor(:,2);
             b2 = vapor(:,3);
@@ -410,8 +410,8 @@ classdef P619
 
             e = rho * T / 216.7;        % equation (4)
 
-            %% Oxigen computation
-            fi = oxigen(:,1);
+            %% Oxygen computation
+            fi = oxygen(:,1);
 
             Si = a1 .* 1e-7 * p * theta.^3 .*exp(a2 * (1.0 - theta));       % equation (3)
 
@@ -810,14 +810,14 @@ classdef P619
             %
             % Input parameters:
             % d         -   vector of terrain profile distances from the Earth station [0,dtot] (km)
-            % h         -   vector of terrain profile heigths amsl (m)
+            % h         -   vector of terrain profile heights amsl (m)
             % hts       -   Earth station height elevation amsl (m)
             % ae        -   median effective Earth's radius (c.f. Eq (6a)Dear )
             %
             % Output parameters:
             %
             % d_hoz        -   Earth station antenna horizon distance (km)
-            % th_hoz       -   Eart station antenna horizon elevation angle (mrad)
+            % th_hoz       -   Earth station antenna horizon elevation angle (mrad)
             
             n = length(d);
         
@@ -923,7 +923,7 @@ classdef P619
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         function [Dts, theta_0, psi] = straight_line_e2s(obj, Hs, Ht, phi_s, phi_t, delta)
-            %%straight_line_e2s Computes geometry of straigth-line Earth-space path
+            %%straight_line_e2s Computes geometry of straigtht-line Earth-space path
             %
             % Recommendation ITU-R P.619-5 Attachment A to Annex 1
             %
@@ -941,7 +941,7 @@ classdef P619
             %
             % Dts         km       float    Straight-line distance between earth and space stations
             % theta_0     deg      float    Elevation angle above horizontal of the straight-line
-            % psi         deg      float    Azimuthal bearing of the straight line eastwards from true NorthD
+            % psi         deg      float    Azimuthal bearing of the straight line eastwards from true North
 
 
             % Step 1 Calculate the distances of the space station and the earth-based station
@@ -1340,13 +1340,13 @@ classdef P619
 
             else % Case 2: phi_e < 0
 
-                % In this case, the attenuatin in equation (29) can be
+                % In this case, the attenuation in equation (29) can be
                 % calculated as the sum of two paths, one from the height of
-                % the eart station to a virtual termial a t the minimum
+                % the earth station to a virtual terminal at the minimum
                 % altitude height Hmin and one from the virtual terminal to
                 % the space station
 
-                % This subrutine assumes that the first order derivative of
+                % This subroutine assumes that the first order derivative of
                 % the atmospheric refractive index w.r.t. altitude is not
                 % given. For that reason equation (45) is solved using
                 % iterative method as given in Recommendation ITU-R P.676.
@@ -1518,7 +1518,7 @@ classdef P619
 
             % first height regime
 
-            % Convert geometic height to geopotential height (1a)
+            % Convert geometric height to geopotential height (1a)
 
             hp = 6356.766 .* h(kk) ./ (6356.766 + h(kk));
 
@@ -2019,7 +2019,7 @@ classdef P619
             % T           K        float    Temperature profile
             % P           hPa      float    Pressure profile
             % rho         g/m^3    float    water-vapour density profile
-            % n           -        float    Athmospheric radio refractivindex profile
+            % n           -        float    Atmospheric radio refractive index profile
 
             if (atm_type == 1)
 
@@ -2097,7 +2097,7 @@ classdef P619
 
             e = rho .* T / 216.7;          %(8) P.835
 
-            % Water-vapour density decreases exponantially with increasing
+            % Water-vapour density decreases exponentially with increasing
             % altitude, up to an altitude where the mixing ration e(h)/P(h)
             % = 2e-6. Above this altitude, the mixing ration is assumed to
             % be constant
@@ -2116,7 +2116,7 @@ classdef P619
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %  Recommendation ITU-R P.453-14: Formula for wet term of refractivy      %
+        %  Recommendation ITU-R P.453-14: Formula for wet term of refractivity      %
         %  Annex 1, equations (4) and (8-9)                                         %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -2289,7 +2289,7 @@ classdef P619
             %
             % Outputs:
             % Ast         dB       float    Tropospheric scintillation not exceeded for p percent time
-            %                               Negative values for p < 50 indicate an enhancement in singal level
+            %                               Negative values for p < 50 indicate an enhancement in signal level
 
 
             if (f < 4 || f > 100)
@@ -2522,7 +2522,7 @@ classdef P619
             Pscat = 10*log10(10.^(0.1*Pin) - 10.^(0.1*Pout));    %(64)
 
             % Step 6: Assuming that the rain scatter is isotropic,
-            % calculate the scattered e.i.r.p. wihtin the common volume
+            % calculate the scattered e.i.r.p. within the common volume
 
             if cyl == 1
                 Peirps = Pscat;                                    %(65a)
