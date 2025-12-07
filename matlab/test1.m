@@ -16,8 +16,11 @@ lon_s = 10;
 lon_e = 9;
 p2 = 50;
 Ga = 20;
+% Simple three-point terrain profile (distances in km, heights in m)
+d_profile = [0, dkm/2, dkm];
+h_profile = He*1000 .* [1, 1, 1];
 
 
 p = P619;
 
-tl = p.tl_p619_single(fGHz, dkm, e2sflag, p1, He, Hs, phi_e, phi_s, Dphi, atm_type, lat_s, lat_e, lon_s, lon_e, p2, Ga)
+tl = p.tl_p619_single(fGHz, dkm, e2sflag, p1, He, Hs, phi_e, phi_s, Dphi, atm_type, lat_s, lat_e, lon_s, lon_e, p2, Ga, d_profile, h_profile);
