@@ -163,7 +163,7 @@ classdef P619
                     xpd = p618_hydrometeor_xpd(obj, fGHz, opts.Tp, opts.Ap, opts.tau, opts.theta);
                     if (fGHz > 4 && fGHz < 6)
                         xpd = p618_hydrometeor_xpd(obj, 6, opts.Tp, opts.Ap, opts.tau, opts.theta);
-                        xpd = p618_xpd_scaling(obj, xpd, 6, ops.tau, fGHz, opts.tau);
+                        xpd = p618_xpd_scaling(obj, xpd, 6, opts.tau, fGHz, opts.tau);
                     end
                     Ax = hydrometeor_depolarization_attenuation(obj, xpd);
 
@@ -180,14 +180,14 @@ classdef P619
 
             Hs = min(100, Hs); % ISSUE P.619 does not explicitly limit the upper height, but P.676 and standard atmospheres do
 
-            h = p676_slant_path_geometry16(obj, He, Hs);
+            h_atm = p676_slant_path_geometry16(obj, He, Hs);
 
 %             % First, compute the bounds for the layers from 0-100 km
 %             h = p676_slant_path_geometry15(obj);
 
             % compute the midpoint for each layer
 
-            hmid = 0.5*( h(1:end-1) + h(2:end));
+            hmid = 0.5*( h_atm(1:end-1) + h_atm(2:end));
 
             % compute T, P, rho, n profiles at midpoint of each layer
 
@@ -195,11 +195,11 @@ classdef P619
 
             if (e2sflag)
 
-                Ag = atm_attenuation_E2s(obj, fGHz, He, Hs, phi_e, phi_s, Dphi, h, rho, T, P, n, true, atm_type);
+                Ag = atm_attenuation_E2s(obj, fGHz, He, Hs, phi_e, phi_s, Dphi, h_atm, rho, T, P, n, true, atm_type);
                 
             else
 
-                Ag = atm_attenuation_s2E(obj, fGHz, He, Hs, phi_e, phi_s, Dphi, h, rho, T, P, n, true);
+                Ag = atm_attenuation_s2E(obj, fGHz, He, Hs, phi_e, phi_s, Dphi, h_atm, rho, T, P, n, true);
 
             end
 
@@ -237,7 +237,7 @@ classdef P619
             % Find radio-refractivity lapse rate dN 
             % using the digital maps at the Earth station site
 
-            DN = get_interp2('DN50',lon_e,lat_n);
+            DN = get_interp2(obj, 'DN50',lon_e,lat_e);
             
             k50 = 157/(157-DN);     % (5) ITU-R P.452
 
@@ -780,7 +780,7 @@ classdef P619
                 beta = 10.^(-0.015 * abs(phi) + 1.67);  % % (13c)
             end
 
-            dn = 600 / (1+ fGHz)   % km 
+            dn = 600 / (1+ fGHz);   % km 
 
             Gamma = 1.076/( (2.0058-log10(beta)).^1.012 ) * exp( -(9.51 -4.8*log10(beta) + 0.195*(log10(beta)).^2)*1e-6*dn^1.13 );  %(13b)
 
@@ -3094,10 +3094,8 @@ classdef P619
             % it by erfinv (using Rec. ITU-R P.1057)
             %B = norminv(p/100, mu2, sigma2);
             Finv = sqrt(2) * erfinv(2*p/100-1); % Using definition in P.1057
+            A = mu1 + sigma1 * Finv;
             B = mu2 + sigma2 * Finv;
-
-            %A = norminv(p/100, mu1, sigma1);
-            B = mu1 + sigma1 * Finv;
 
             L = 10*log10( 10^(0.1*A) + 10^(0.1*B) + 10^(0.1*C));
 
