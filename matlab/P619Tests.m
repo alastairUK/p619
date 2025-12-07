@@ -12,6 +12,18 @@ classdef P619Tests < matlab.unittest.TestCase
     end
 
     methods (Test)
+        function tl_free_space(testCase)
+            % Array of test inputs
+            fGHz = [1, 10, 0.5, 2, 5];
+            dkm  = [1, 10, 20, 0.1, 100];
+            expected = 92.45 + 20*log10(fGHz .* dkm);
+            for i = 1:length(fGHz)
+                actual = testCase.ITURP619.tl_free_space(fGHz(i), dkm(i));
+                testCase.verifyEqual(actual, expected(i), 'AbsTol', 1e-6, ...
+                    sprintf('Test failed for fGHz=%.3f, dkm=%.3f', fGHz(i), dkm(i)));
+            end
+        end
+
         function co_and_cross_polar_attenuation(testCase)
             % Columns: [XPD, Across_expected, Aco_expected]
             data = [ ...
