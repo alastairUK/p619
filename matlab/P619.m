@@ -739,19 +739,19 @@ classdef P619
             %
             % Output:
             %   Abs (dB)     : beam spreading term (can be negative if B > 1)
-        
-            den =         1.728  + 0.5411 .*theta0  + 0.03723.*theta0.^2  + ...
-                h    * (0.1815 + 0.06272.*theta0  + 0.0138 .*theta0.^2) + ...
+
+            den = 1.728  + 0.5411 .*theta0  + 0.03723.*theta0.^2  + ...
+                h * (0.1815 + 0.06272.*theta0  + 0.0138 .*theta0.^2) + ...
                 h.^2 .* (0.01727 + 0.008288.*theta0);
-        
+
             nom = 0.5411 + 0.07446.*theta0 + h .* (0.06272 + 0.0276.*theta0) + h.^2 * 0.008288;
-        
+
             B = 1 - nom./den.^2;
-        
+
             if any(B <= 0)
                 error('beam_spreading_los_834_9:InvalidB', 'B must be > 0 to compute log10(B).');
             end
-        
+
             Abs = -10*log10(B);
         end
 
