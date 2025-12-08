@@ -1,148 +1,125 @@
 classdef P619Tests < matlab.unittest.TestCase
+    % P619Tests
+    % Unit/regression tests for P619.
     properties
         ITURP619
     end
 
     methods (TestClassSetup)
         function createP619Instance(testCase)
-            % Assuming P619 is a class you can construct with no args
-            % If it's different, adjust this line accordingly.
+            % createP619Instance
+            % Construct the P619 instance once for the test class.
             testCase.ITURP619 = P619;
         end
     end
 
     methods (Test)
         function tl_free_space(testCase)
-            % Array of test inputs
-            fGHz = [1, 10, 0.5, 2, 5];
-            dkm  = [1, 10, 20, 0.1, 100];
-            expected = 92.45 + 20*log10(fGHz .* dkm);
-            for i = 1:length(fGHz)
-                actual = testCase.ITURP619.tl_free_space(fGHz(i), dkm(i));
-                testCase.verifyEqual(actual, expected(i), 'AbsTol', 1e-6, ...
-                    sprintf('Test failed for fGHz=%.3f, dkm=%.3f', fGHz(i), dkm(i)));
+            % tl_free_space
+            % Validate free-space loss against expected values..
+            T = readtable(P619Tests.dataFile('tl_free_space_cases.csv'));
+            absTol = 1e-6;
+
+            for i = 1:height(T)
+                actual = testCase.ITURP619.tl_free_space(T.fGHz(i), T.dkm(i));
+                msg = sprintf('Test failed for fGHz=%.6g, dkm=%.6g', T.fGHz(i), T.dkm(i));
+                testCase.verifyEqual(actual, T.expected(i), 'AbsTol', absTol, msg);
             end
         end
 
         function co_and_cross_polar_attenuation(testCase)
-            % Columns: [XPD, Across_expected, Aco_expected]
-            data = [ ...
-                 0.000000,  3.010300, 3.010300;
-                 0.300000,  3.162890, 2.862890;
-                 0.600000,  3.320653, 2.720653;
-                 0.900000,  3.483572, 2.583572;
-                 1.200000,  3.651615, 2.451615;
-                 1.500000,  3.824741, 2.324741;
-                 1.800000,  4.002895, 2.202895;
-                 2.100000,  4.186012, 2.086012;
-                 2.400000,  4.374019, 1.974019;
-                 2.700000,  4.566829, 1.866829;
-                 3.000000,  4.764349, 1.764349;
-                 3.300000,  4.966477, 1.666477;
-                 3.600000,  5.173104, 1.573104;
-                 3.900000,  5.384115, 1.484115;
-                 4.200000,  5.599387, 1.399387;
-                 4.500000,  5.818795, 1.318795;
-                 4.800000,  6.042208, 1.242208;
-                 5.100000,  6.269494, 1.169494;
-                 5.400000,  6.500518, 1.100518;
-                 5.700000,  6.735141, 1.035141;
-                 6.000000,  6.973228, 0.973228;
-                 6.300000,  7.214640, 0.914640;
-                 6.600000,  7.459240, 0.859240;
-                 6.900000,  7.706892, 0.806892;
-                 7.200000,  7.957462, 0.757462;
-                 7.500000,  8.210819, 0.710819;
-                 7.800000,  8.466832, 0.666832;
-                 8.100000,  8.725375, 0.625375;
-                 8.400000,  8.986325, 0.586325;
-                 8.700000,  9.249562, 0.549562;
-                 9.000000,  9.514969, 0.514969;
-                 9.300000,  9.782436, 0.482436;
-                 9.600000, 10.051852, 0.451852;
-                 9.900000, 10.323114, 0.423114;
-                10.200000, 10.596121, 0.396121;
-                10.500000, 10.870778, 0.370778;
-                10.800000, 11.146992, 0.346992;
-                11.100000, 11.424675, 0.324675;
-                11.400000, 11.703745, 0.303745;
-                11.700000, 11.984119, 0.284119;
-                12.000000, 12.265724, 0.265724;
-                12.300000, 12.548485, 0.248485;
-                12.600000, 12.832336, 0.232336;
-                12.900000, 13.117209, 0.217209;
-                13.200000, 13.403045, 0.203045;
-                13.500000, 13.689784, 0.189784;
-                13.800000, 13.977372, 0.177372;
-                14.100000, 14.265756, 0.165756;
-                14.400000, 14.554888, 0.154888;
-                14.700000, 14.844720, 0.144720;
-                15.000000, 15.135209, 0.135209;
-                15.300000, 15.426315, 0.126315;
-                15.600000, 15.717997, 0.117997;
-                15.900000, 16.010220, 0.110220;
-                16.200000, 16.302950, 0.102950;
-                16.500000, 16.596154, 0.096154;
-                16.800000, 16.889802, 0.089802;
-                17.100000, 17.183866, 0.083866;
-                17.400000, 17.478318, 0.078318;
-                17.700000, 17.773135, 0.073135;
-                18.000000, 18.068291, 0.068291;
-                18.300000, 18.363766, 0.063766;
-                18.600000, 18.659539, 0.059539;
-                18.900000, 18.955591, 0.055591;
-                19.200000, 19.251902, 0.051902;
-                19.500000, 19.548457, 0.048457;
-                19.800000, 19.845240, 0.045240;
-                20.100000, 20.142235, 0.042235;
-                20.400000, 20.439429, 0.039429;
-                20.700000, 20.736808, 0.036808;
-                21.000000, 21.034361, 0.034361;
-                21.300000, 21.332076, 0.032076;
-                21.600000, 21.629942, 0.029942;
-                21.900000, 21.927950, 0.027950;
-                22.200000, 22.226090, 0.026090;
-                22.500000, 22.524354, 0.024354;
-                22.800000, 22.822732, 0.022732;
-                23.100000, 23.121219, 0.021219;
-                23.400000, 23.419806, 0.019806;
-                23.700000, 23.718487, 0.018487;
-                24.000000, 24.017255, 0.017255;
-                24.300000, 24.316106, 0.016106;
-                24.600000, 24.615033, 0.015033;
-                24.900000, 24.914031, 0.014031;
-                25.200000, 25.213096, 0.013096;
-                25.500000, 25.512223, 0.012223;
-                25.800000, 25.811408, 0.011408;
-                26.100000, 26.110648, 0.010648;
-                26.400000, 26.409938, 0.009938;
-                26.700000, 26.709275, 0.009275;
-                27.000000, 27.008657, 0.008657;
-                27.300000, 27.308079, 0.008079;
-                27.600000, 27.607541, 0.007541;
-                27.900000, 27.907038, 0.007038;
-                28.200000, 28.206568, 0.006568;
-                28.500000, 28.506130, 0.006130;
-                28.800000, 28.805721, 0.005721;
-                29.100000, 29.105340, 0.005340;
-                29.400000, 29.404984, 0.004984;
-                29.700000, 29.704651, 0.004651;
-                30.000000, 30.004341, 0.004341 ...
-            ];
-
+            % co_and_cross_polar_attenuation
+            % Validate co- and cross-polar attenuation outputs.
+            T = readtable(P619Tests.dataFile('co_and_cross_polar_attenuation.csv'));
             absTol = 1e-6;
 
-            for k = 1:size(data, 1)
-                xpd        = data(k, 1);
-                Across_exp = data(k, 2);
-                Aco_exp    = data(k, 3);
-
+            for k = 1:height(T)
+                xpd = T.XPD(k);
                 [Across, Aco] = testCase.ITURP619.co_and_cross_polar_attenuation(xpd);
 
-                msg = sprintf('Mismatch at XPD = %.3f dB', xpd);
-                testCase.verifyEqual(Aco,    Aco_exp,    'AbsTol', absTol, msg);
-                testCase.verifyEqual(Across, Across_exp, 'AbsTol', absTol, msg);
+                msg = sprintf('Mismatch at XPD = %.6g dB', xpd);
+                testCase.verifyEqual(Aco,    T.Aco_expected(k),    'AbsTol', absTol, msg);
+                testCase.verifyEqual(Across, T.Across_expected(k), 'AbsTol', absTol, msg);
             end
+        end
+
+        function beam_spreading_loss_834_8(testCase)
+            % beam_spreading_loss_834_8
+            % Regression test for -8 beam spreading behaviour (|10*log10(B)|).
+
+            obj = testCase.ITURP619;
+            T = readtable(P619Tests.dataFile('beam_spreading_cases.csv'));
+            absTol = 1e-9;
+
+            for i = 1:height(T)
+                actVal = obj.beam_spreading_loss(T.theta0_deg(i), T.h_km(i));
+                testCase.verifyEqual(actVal, T.expected_p834_8(i), 'AbsTol', absTol);
+            end
+        end
+
+        function beam_spreading_loss_834_9(testCase)
+            % beam_spreading_los_834_9
+            % Validate newer  definition (Abs = -10*log10(B)).
+
+            obj = testCase.ITURP619;
+            T = readtable(P619Tests.dataFile('beam_spreading_cases.csv'));
+            absTol = 1e-9;
+
+            for i = 1:height(T)
+                actVal = obj.beam_spreading_loss_834_9(T.theta0_deg(i), T.h_km(i));
+                testCase.verifyEqual(actVal, T.expected_p834_9(i), 'AbsTol', absTol);
+            end
+        end
+
+        function p676d11_ga_specific_attenuation_validation(testCase)
+            % Test: p676d11_ga_specific_attenuation_validation
+            % Validate P.676-11 specific attenuation components returned by p676d11_ga()
+            % (oxygen g0 and water vapour gw) against ITU validation sheet values.
+
+            csvPath = fullfile(fileparts(mfilename('fullpath')), "testdata", ...
+                "p676d11_ga_validation_specific_attenuation.csv");
+
+            tbl = readtable(csvPath);
+
+            req = ["f_GHz","p_hPa","rho_gm3","T_K", ...
+                "expected_gamma0_dB_per_km","expected_gammaw_dB_per_km"];
+            testCase.verifyTrue(all(ismember(req, string(tbl.Properties.VariableNames))), ...
+                "CSV missing required columns.");
+
+            absTol = 1e-8;
+
+            for k = 1:height(tbl)
+                f = tbl.f_GHz(k);
+                p = tbl.p_hPa(k);
+                rho = tbl.rho_gm3(k);
+                T = tbl.T_K(k);
+
+                exp_g0 = tbl.expected_gamma0_dB_per_km(k);
+                exp_gw = tbl.expected_gammaw_dB_per_km(k);
+
+                [g0, gw] = testCase.ITURP619.p676d11_ga(f, p, rho, T);
+
+                msg = sprintf("Row %d: f=%.6g GHz, pdry=%.6g hPa, rho=%.6g g/m3, T=%.6g K", ...
+                    k, f, p, rho, T);
+
+                testCase.verifyEqual(g0, exp_g0, "AbsTol", absTol, msg + " (g0)");
+                testCase.verifyEqual(gw, exp_gw, "AbsTol", absTol, msg + " (gw)");
+            end
+        end
+
+
+    end
+
+    methods (Static, Access = private)
+        function p = dataFile(name)
+            % dataFile
+            % Build an absolute path to a CSV under ./testdata next to this file.
+            % Inputs:
+            %   name - string/char, CSV filename (e.g. 'my_test.csv')
+            % Outputs:
+            %   p - absolute path to the CSV
+            testDir = fileparts(which('P619Tests'));
+            p = fullfile(testDir, 'testdata', name);
         end
     end
 end
