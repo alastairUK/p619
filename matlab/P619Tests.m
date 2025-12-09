@@ -214,8 +214,36 @@ classdef P619Tests < matlab.unittest.TestCase
             testCase.verifyEqual(Tcur.h_km,       Tapp.h_km,       "AbsTol", absTol, "h_km mismatch.");
             testCase.verifyEqual(Tcur.p834_9,     Tapp.p834_9,     "AbsTol", absTol, "p834_9 mismatch.");
         end
+
+        function get_interp2_Nwet_Annual_time_location_validation(testCase)
+            % Test: get_interp2_Nwet_Annual_time_location_validation
+            % Validates get_interp2_Nwet_Annual_time_location() against known values.
+            csvPath = fullfile(fileparts(mfilename('fullpath')), "testdata", ...
+                "P618_14_A_Scint.csv");
+
+            tbl = readtable(csvPath);
+
+            req = ["Lat_degN","Lon_degE","MedianNwet_P453"];
+            testCase.verifyTrue(all(ismember(req, string(tbl.Properties.VariableNames))), ...
+                "CSV missing required columns.");
+
+            absTol = 1e-7;
+
+            for k = 1:height(tbl)
+                Lat_degN = tbl.Lat_degN(k);
+                Lon_degE = tbl.Lon_degE(k);
+
+                exp_MedianNwet = tbl.MedianNwet_P453(k);
+
+                act_MedianNwet = testCase.ITURP619.get_interp2_Nwet_Annual_time_location(50.0, Lon_degE, Lat_degN);
+
+                msg = sprintf("Row %d: Lat_degN=%.6g, Lon_degE=%.6g", ...
+                    k, Lat_degN, Lon_degE);
+
+                testCase.verifyEqual(act_MedianNwet, exp_MedianNwet, "AbsTol", absTol, msg);
+            end
+        end
     end
-        
 
     methods (Static, Access = private)
         function p = dataFile(name)
