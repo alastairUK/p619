@@ -106,8 +106,43 @@ classdef P619Tests < matlab.unittest.TestCase
                 testCase.verifyEqual(gw, exp_gw, "AbsTol", absTol, msg + " (gw)");
             end
         end
+        function p618_hydrometeor_xpd_validation(testCase)
+            % Test: p618_hydrometeor_xpd_validation
+            % Validate P.618-14 cross-polarization discrimination
+            % from rain statistics
+            csvPath = fullfile(fileparts(mfilename('fullpath')), "testdata", ...
+                "P618_14_XPD.csv");
 
+            tbl = readtable(csvPath);
 
+            req = ["f_GHz","P_percent","A_p","ElevationAngle_deg","PolarizationTiltAngle_deg","XPD_p"];
+            testCase.verifyTrue(all(ismember(req, string(tbl.Properties.VariableNames))), ...
+                "CSV missing required columns.");
+
+            absTol = 1e-8;
+
+            for k = 1:height(tbl)
+                f = tbl.f_GHz(k);
+                p = tbl.P_percent(k);
+                A_p = tbl.A_p(k);
+                ElevationAngle_deg = tbl.ElevationAngle_deg(k);
+                PolarizationTiltAngle_deg = tbl.PolarizationTiltAngle_deg(k);
+
+                if (ElevationAngle_deg > 60)
+                    warning("Row %d: ElevationAngle_deg=%.6g exceeds model validity range (<=60 deg). Skipping.", ...
+                        k, ElevationAngle_deg);
+                    continue;
+                end
+                
+                exp_XPD_p = tbl.XPD_p(k);
+
+                [xpd] = testCase.ITURP619.p618_hydrometeor_xpd(f, p, A_p, PolarizationTiltAngle_deg, ElevationAngle_deg);
+                msg = sprintf("Row %d: f=%.6g GHz, P=%.6g percent, A_p=%.6g, ElevationAngle_deg=%.6g, PolarizationTiltAngle_deg=%.6g", ...
+                    k, f, p, A_p, ElevationAngle_deg, PolarizationTiltAngle_deg);
+
+                testCase.verifyEqual(xpd, exp_XPD_p, "AbsTol", absTol, msg + " (XPD_p)");
+            end
+        end
     end
 
     methods (Static, Access = private)

@@ -546,7 +546,7 @@ classdef P619
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         function xpd = p618_hydrometeor_xpd(obj, f, p, Ap, tau, theta)
-            %%p618_hydrometeor_xpd Computes the cross-polarizaion discrimination
+            %%p618_hydrometeor_xpd Computes the cross-polarization discrimination
             % from rain statistics. The procedure is valid for frequencies in the
             % range 6 to 55 GHz and path elevation angles below 60 degrees
             %
@@ -561,7 +561,7 @@ classdef P619
             %                               the required percentage of time p (co-polar attenuation)
             % tau         deg      float    Tilt angle of the linearly
             %                               polarized electric field vector with respect to the
-            %                               horizontal 0-90 degs (for circular polarizaion use tau = 45)
+            %                               horizontal 0-90 degs (for circular polarization use tau = 45)
             % theta       deg      float    path elevation angle
             %
             % Outputs:
