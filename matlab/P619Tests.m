@@ -106,6 +106,21 @@ classdef P619Tests < matlab.unittest.TestCase
                 testCase.verifyEqual(gw, exp_gw, "AbsTol", absTol, msg + " (gw)");
             end
         end
+
+        function p618_xpd_scaling_validation(testCase)
+            % Test: p618_xpd_scaling_validation
+            % Validate scaling of long-term XPD between frequencies/polarizations.
+            T = readtable(P619Tests.dataFile('p618_xpd_scaling_cases.csv'));
+
+            absTol = 1e-9;
+            for k = 1:height(T)
+                act = testCase.ITURP619.p618_xpd_scaling(T.xpd1_dB(k), T.f1_GHz(k), T.tau1_deg(k), T.f2_GHz(k), T.tau2_deg(k));
+                msg = sprintf("Row %d: xpd1=%.6g dB, f1=%.6g GHz, tau1=%.6g deg, f2=%.6g GHz, tau2=%.6g deg", ...
+                    k, T.xpd1_dB(k), T.f1_GHz(k), T.tau1_deg(k), T.f2_GHz(k), T.tau2_deg(k));
+                testCase.verifyEqual(act, T.expected_xpd2_dB(k), "AbsTol", absTol, msg);
+            end
+        end
+
         function p618_hydrometeor_xpd_validation(testCase)
             % Test: p618_hydrometeor_xpd_validation
             % Validate P.618-14 cross-polarization discrimination
