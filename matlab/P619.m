@@ -613,19 +613,16 @@ classdef P619
             % Step 5, equation (72)
             % This equation gives the values only at discrete time
             % percentages of 0.001%, 0.01%, 0.1% and 1%
-            % ? could the guidance be improved/expanded
+            % consensus is to do it like this (for now!)
 
-            switch p
-                case 0.001
-                    sigma = 15;
-                case 0.01
-                    sigma = 10;
-                case 0.1
-                    sigma = 5;
-                case 1
-                    sigma = 0;
-                otherwise
-                    error('The model accepts the following time percentages: 0.001, 0.01, 0.1, and 1.')
+            if (p >= 1.0)
+                sigma = 0.0;
+            elseif (p >= 0.1)
+                sigma = 5.0;
+            elseif (p >= 0.01)
+                sigma = 10.0;
+            else 
+                sigma = 15.0;
             end
 
             Csigma = 0.0053*sigma.^2;
