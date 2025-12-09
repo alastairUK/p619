@@ -107,6 +107,63 @@ classdef P619Tests < matlab.unittest.TestCase
             end
         end
 
+        function beam_spreading_loss_834_9_random_approval(testCase)
+            % beam_spreading_loss_834_9_random_approval
+            % Approval-style CSV test for beam_spreading_loss_834_9().
+            % - Generates deterministic random inputs (theta0_deg, h_km)
+            % - Computes p834_9 results
+            % - If approved CSV exists: compares against it
+            % - If not: creates approved CSV
+            % Files written under ./test_data next to this test file:
+            %   beam_spreading_random_p834_9_approved.csv
+            %   beam_spreading_random_p834_9_current.csv
+        
+            obj = testCase.ITURP619;
+        
+            seed = 12345;
+            N = 1000;
+        
+            rng(seed, "twister");
+            theta0_deg = 0.001 + (9.999 - 0.001) * rand(N, 1);
+            h_km       = 0.0   + (4.999 - 0.0)   * rand(N, 1);
+        
+            p834_9 = zeros(N, 1);
+            for i = 1:N
+                p834_9(i) = obj.beam_spreading_loss_834_9(theta0_deg(i), h_km(i));
+            end
+        
+            testDir = fileparts(which("P619Tests"));
+            outDir = fullfile(testDir, "testdata");
+            if exist(outDir, "dir") ~= 7
+                mkdir(outDir);
+            end
+        
+            approvedFile = fullfile(outDir, "beam_spreading_random_p834_9_approved.csv");
+            currentFile  = fullfile(outDir, "beam_spreading_random_p834_9_current.csv");
+        
+            Tcur = table(theta0_deg, h_km, p834_9);
+            writetable(Tcur, currentFile);
+        
+            if exist(approvedFile, "file") ~= 2
+                writetable(Tcur, approvedFile);
+                testCase.verifyTrue(true);
+                return;
+            end
+        
+            Tapp = readtable(approvedFile);
+        
+            req = ["theta0_deg","h_km","p834_9"];
+            testCase.verifyTrue(all(ismember(req, string(Tapp.Properties.VariableNames))), ...
+                "Approved CSV missing required columns.");
+        
+            testCase.verifyEqual(height(Tapp), height(Tcur), "Approved/current row count mismatch.");
+        
+            absTol = 1e-12;
+            testCase.verifyEqual(Tcur.theta0_deg, Tapp.theta0_deg, "AbsTol", absTol, "theta0_deg mismatch.");
+            testCase.verifyEqual(Tcur.h_km,       Tapp.h_km,       "AbsTol", absTol, "h_km mismatch.");
+            testCase.verifyEqual(Tcur.p834_9,     Tapp.p834_9,     "AbsTol", absTol, "p834_9 mismatch.");
+        end
+
 
     end
 
