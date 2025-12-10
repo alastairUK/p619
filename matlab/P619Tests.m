@@ -243,6 +243,41 @@ classdef P619Tests < matlab.unittest.TestCase
                 testCase.verifyEqual(act_MedianNwet, exp_MedianNwet, "AbsTol", absTol, msg);
             end
         end
+
+        function tropospheric_scintillation_validation(testCase)
+            % Test: tropospheric_scintillation_validation
+            % Validates tropospheric_scintillation() against known values.
+            csvPath = fullfile(fileparts(mfilename('fullpath')), "testdata", ...
+                "P618_14_A_Scint_with_P619_Variation.csv");
+
+            tbl = readtable(csvPath);
+
+            req = ["f_GHz","ElevationAngle_deg","AntennaDiameter_m", ...
+                   "AntennaEfficiency_h","p_percent","MedianNwet_P453","Ast_dB"];
+            testCase.verifyTrue(all(ismember(req, string(tbl.Properties.VariableNames))), ...
+                "CSV missing required columns.");
+
+            absTol = 1e-4;
+
+            for k = 1:height(tbl)
+                f = tbl.f_GHz(k);
+                ElevationAngle_deg = tbl.ElevationAngle_deg(k);
+                AntennaDiameter_m = tbl.AntennaDiameter_m(k);
+                AntennaEfficiency_h = tbl.AntennaEfficiency_h(k);
+                p_percent = tbl.p_percent(k);
+                MedianNwet_P453 = tbl.MedianNwet_P453(k);
+
+                exp_Ast_dB = tbl.Ast_dB(k);
+
+                Ga = 10.0*log10(AntennaEfficiency_h*((pi*AntennaDiameter_m*f*1e9)/299792458)^2);
+                act_Ast_dB = testCase.ITURP619.tropospheric_scintillation(f, p_percent, MedianNwet_P453, ElevationAngle_deg, Ga);
+
+                msg = sprintf("Row %d: f=%.6g, ElevationAngle_deg=%.6g", ...
+                    k, f, ElevationAngle_deg);
+
+                testCase.verifyEqual(act_Ast_dB, exp_Ast_dB, "AbsTol", absTol, msg);
+            end
+        end
     end
 
     methods (Static, Access = private)
