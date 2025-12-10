@@ -257,7 +257,7 @@ classdef P619Tests < matlab.unittest.TestCase
             testCase.verifyTrue(all(ismember(req, string(tbl.Properties.VariableNames))), ...
                 "CSV missing required columns.");
 
-            absTol = 1e-4;
+            absTol = 1e-7;
 
             for k = 1:height(tbl)
                 f = tbl.f_GHz(k);
@@ -269,7 +269,7 @@ classdef P619Tests < matlab.unittest.TestCase
 
                 exp_Ast_dB = tbl.Ast_dB(k);
 
-                Ga = 10.0*log10(AntennaEfficiency_h*((pi*AntennaDiameter_m*f*1e9)/299792458)^2);
+                Ga = 10.0*log10(AntennaEfficiency_h*((pi*AntennaDiameter_m*f*1e9)/3e8)^2);
                 act_Ast_dB = testCase.ITURP619.tropospheric_scintillation(f, p_percent, MedianNwet_P453, ElevationAngle_deg, Ga);
 
                 msg = sprintf("Row %d: f=%.6g, ElevationAngle_deg=%.6g", ...
