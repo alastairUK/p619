@@ -1858,15 +1858,15 @@ classdef P619
 
             rho(kk) = 3.4742*exp(-0.2697*h(kk) - 0.03604*h(kk).^2 + 0.0004489*h(kk).^3);
 
-            kk = (h > 15 & h<=100);
+            kk = (h > 10 & h<=100);
             rho(kk) = 0;
 
 
         end
 
 
-        function [T, P, rho] = p835_high_altitude_summer_reference(obj, h)
-            %% p835_highg_altitude_summer_reference Computes T, P, rho height profiles for summer high-latitude reference atmosphere
+        function [T, P, rho] = p835_high_latitude_summer_reference(obj, h)
+            %% p835_high_latitude_summer_reference Computes T, P, rho height profiles for summer high-latitude reference atmosphere
             % High-latitudes (60 deg N)
             %
             % Recommendation ITU-R P.835-7 Annex 2 §1.3.1
@@ -1921,16 +1921,16 @@ classdef P619
 
             kk = (0 <= h & h <= 10);
 
-            P(kk) = 1018.0278 - 113.2494 * h(kk) + 3.9408 * h(kk).^2;
+            P(kk) = 1008.0278 - 113.2494 * h(kk) + 3.9408 * h(kk).^2;
 
             kk = (h > 10 & h <= 72);
 
-            P10 = 1018.0278 - 113.2494 * 10 + 3.9408 * 100;
+            P10 = 1008.0278 - 113.2494 * 10 + 3.9408 * 100;
             P(kk) = P10*exp(-0.140*(h(kk)-10));
 
             kk = (h > 72 & h <= 100);
 
-            P10 = 1018.0278 - 113.2494 * 10 + 3.9408 * 100;
+            P10 = 1008.0278 - 113.2494 * 10 + 3.9408 * 100;
             P72 = P10*exp(-0.140*(72-10));
             P(kk) = P72*exp(-0.165*(h(kk)-72));
 
@@ -1947,8 +1947,8 @@ classdef P619
 
         end
 
-        function [T, P, rho] = p835_high_altitude_winter_reference(obj, h)
-            %% p835_high_altitude_winter_reference Computes T, P, rho height profiles for winter high-latitude reference atmosphere
+        function [T, P, rho] = p835_high_latitude_winter_reference(obj, h)
+            %% p835_high_latitude_winter_reference Computes T, P, rho height profiles for winter high-latitude reference atmosphere
             % High-latitudes (60 deg N)
             %
             % Recommendation ITU-R P.835-7 Annex 2 §1.3.2
@@ -2012,7 +2012,7 @@ classdef P619
 
             rho(kk) = 1.2319*exp(0.07481*h(kk) - 0.0981*h(kk).^2 + 0.00281*h(kk).^3);
 
-            kk = (h > 15 & h <= 100);
+            kk = (h > 10 & h <= 100);
             rho(kk) = 0;
 
 
@@ -2065,11 +2065,11 @@ classdef P619
 
             elseif (atm_type == 41)
 
-                [T, P, rho] = p835_high_altitude_summer_reference(obj, h);
+                [T, P, rho] = p835_high_latitude_summer_reference(obj, h);
 
             elseif (atm_type == 42)
 
-                [T, P, rho] = p835_high_altitude_winter_reference(obj, h);
+                [T, P, rho] = p835_high_latitude_winter_reference(obj, h);
 
             else
 

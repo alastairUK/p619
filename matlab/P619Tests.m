@@ -289,13 +289,13 @@ classdef P619Tests < matlab.unittest.TestCase
             testCase.p835_profile_validation_helper('p835_mid_latitude_summer_reference.csv', 31);
         end
         function p835_mid_latitude_winter_reference_validation(testCase)
-            testCase.p835_profile_validation_helper('p835_mid_latitude_winter_reference.csv', 31);
+            testCase.p835_profile_validation_helper('p835_mid_latitude_winter_reference.csv', 32);
         end
-        function p835_high_altitude_summer_reference_validation(testCase)
-            testCase.p835_profile_validation_helper('p835_high_altitude_summer_reference.csv', 41);
+        function p835_high_latitude_summer_reference_validation(testCase)
+            testCase.p835_profile_validation_helper('p835_high_latitude_summer_reference.csv', 41);
         end
-        function p835_high_altitude_winter_reference_validation(testCase)
-            testCase.p835_profile_validation_helper('p835_high_altitude_winter_reference.csv', 42);
+        function p835_high_latitude_winter_reference_validation(testCase)
+            testCase.p835_profile_validation_helper('p835_high_latitude_winter_reference.csv', 42);
         end
     end
 
@@ -324,7 +324,7 @@ classdef P619Tests < matlab.unittest.TestCase
                     sprintf("Row %d: height_km=%.6g (wvd_gm3)", k, height_km));
                 testCase.verifyEqual(act_n,           exp_n,           "AbsTol", absTol, ...
                     sprintf("Row %d: height_km=%.6g (n)", k, height_km));
-            end
+             end
         end
     end
 
