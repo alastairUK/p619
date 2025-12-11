@@ -1594,7 +1594,7 @@ classdef P619
 
             % Second height regime
 
-            ll = (h > 86 & h <= 91);
+            ll = (h >= 86 & h <= 91);
 
             T(ll)  = 186.8673;                           %(4a)
 
@@ -1615,12 +1615,30 @@ classdef P619
 
 
 
-            % Section 1.2: Water-vapour pressure
+            % Section 1.2: Water-vapour density (ITU-R P.835-7 Annex 1, §1.2)
+            rho0 = 7.5;      % g/m^3
+            h0   = 2;        % km
+            K    = 216.7;    % P.835 constant
+            tau  = 2e-6;     % e/P threshold
 
-            rho0 = 7.5;                   %(7)
-            h0 = 2;
+            % Exponential profile
+            rho_exp = rho0 .* exp(-h ./ h0);
 
-            rho = rho0 * exp(-h./h0);        %(6)
+            % e / P
+            e         = rho_exp .* T ./ K;
+            e_over_P  = e ./ P;
+
+            % Find the first index where e(Z)/P(Z) < 2e-6
+            idx_transition = find(e_over_P < tau, 1, 'first');
+
+            % Start with exponential everywhere
+            rho = rho_exp;
+
+            if ~isempty(idx_transition)
+                % From the transition index upwards, use the algorithmic definition
+                mask = (1:numel(h)) >= idx_transition;
+                rho(mask) = tau .* P(mask) .* K ./ T(mask);
+            end
 
 
 
