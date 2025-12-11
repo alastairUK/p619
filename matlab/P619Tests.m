@@ -280,223 +280,42 @@ classdef P619Tests < matlab.unittest.TestCase
         end
 
         function p835_reference_atmosphere_validation(testCase)
-            % Test: p835_reference_atmosphere_validation
-            % Validates p835_reference_atmosphere() against known values.
-            csvPath = fullfile(fileparts(mfilename('fullpath')), "testdata", ...
-                "p835_reference_atmosphere.csv");
-
-            tbl = readtable(csvPath);
-
-            req = ["height_km","temp_K","pressure_hPa","wvd_gm3","n"];
-
-            testCase.verifyTrue(all(ismember(req, string(tbl.Properties.VariableNames))), ...
-                "CSV missing required columns.");
-
-            absTol = 1e-7;
-
-            for k = 1:height(tbl)
-
-                height_km = tbl.height_km(k);
-                exp_temp_K = tbl.temp_K(k);
-                exp_pressure_hPa = tbl.pressure_hPa(k);
-                exp_wvd_gm3 = tbl.wvd_gm3(k);
-                exp_n = tbl.n(k);
-
-                [act_temp_K, act_pressure_hPa, act_wvd_gm3, act_n] = ...
-                    testCase.ITURP619.p835_std_atm_profiles(height_km,1);
-
-                % fprintf("%.10f, %.10f, %.10f, %.10f\n", act_temp_K, act_pressure_hPa, act_wvd_gm3, act_n);
-
-                testCase.verifyEqual(act_temp_K,      exp_temp_K,      "AbsTol", absTol, ...
-                    sprintf("Row %d: height_km=%.6g (temp_K)", k, height_km));
-                testCase.verifyEqual(act_pressure_hPa, exp_pressure_hPa, "AbsTol", absTol, ...
-                    sprintf("Row %d: height_km=%.6g (pressure_hPa)",k, height_km));
-                testCase.verifyEqual(act_wvd_gm3,     exp_wvd_gm3,     "AbsTol", absTol, ...
-                    sprintf("Row %d: height_km=%.6g (wvd_gm3)", k, height_km));
-                testCase.verifyEqual(act_n,           exp_n,           "AbsTol", absTol, ...
-                    sprintf("Row %d: height_km=%.6g (n)", k, height_km));
-            end
+            testCase.p835_profile_validation_helper('p835_reference_atmosphere.csv', 1);
         end
         function p835_low_latitude_annual_reference_validation(testCase)
-            % Test: p835_low_latitude_annual_reference_validation
-            % Validates p835_low_latitude_annual_reference() against known values.
-            csvPath = fullfile(fileparts(mfilename('fullpath')), "testdata", ...
-                "p835_low_latitude_annual_reference.csv");
-
-            tbl = readtable(csvPath);
-
-            req = ["height_km","temp_K","pressure_hPa","wvd_gm3","n"];
-
-            testCase.verifyTrue(all(ismember(req, string(tbl.Properties.VariableNames))), ...
-                "CSV missing required columns.");
-
-            absTol = 1e-7;
-
-            for k = 1:height(tbl)
-
-                height_km = tbl.height_km(k);
-                exp_temp_K = tbl.temp_K(k);
-                exp_pressure_hPa = tbl.pressure_hPa(k);
-                exp_wvd_gm3 = tbl.wvd_gm3(k);
-                exp_n = tbl.n(k);
-
-                [act_temp_K, act_pressure_hPa, act_wvd_gm3, act_n] = ...
-                    testCase.ITURP619.p835_std_atm_profiles(height_km,2);
-
-                % fprintf("%.10f, %.10f, %.10f, %.10f\n", act_temp_K, act_pressure_hPa, act_wvd_gm3, act_n);
-
-                testCase.verifyEqual(act_temp_K,      exp_temp_K,      "AbsTol", absTol, ...
-                    sprintf("Row %d: height_km=%.6g (temp_K)", k, height_km));
-                testCase.verifyEqual(act_pressure_hPa, exp_pressure_hPa, "AbsTol", absTol, ...
-                    sprintf("Row %d: height_km=%.6g (pressure_hPa)",k, height_km));
-                testCase.verifyEqual(act_wvd_gm3,     exp_wvd_gm3,     "AbsTol", absTol, ...
-                    sprintf("Row %d: height_km=%.6g (wvd_gm3)", k, height_km));
-                testCase.verifyEqual(act_n,           exp_n,           "AbsTol", absTol, ...
-                    sprintf("Row %d: height_km=%.6g (n)", k, height_km));
-            end
+            testCase.p835_profile_validation_helper('p835_low_latitude_annual_reference.csv', 2);
         end
         function p835_mid_latitude_summer_reference_validation(testCase)
-            % Test: p835_mid_latitude_summer_reference_validation
-            % Validates p835_mid_latitude_summer_reference() against known values.
-            csvPath = fullfile(fileparts(mfilename('fullpath')), "testdata", ...
-                "p835_mid_latitude_summer_reference.csv");
-
-            tbl = readtable(csvPath);
-
-            req = ["height_km","temp_K","pressure_hPa","wvd_gm3","n"];
-
-            testCase.verifyTrue(all(ismember(req, string(tbl.Properties.VariableNames))), ...
-                "CSV missing required columns.");
-
-            absTol = 1e-7;
-
-            for k = 1:height(tbl)
-
-                height_km = tbl.height_km(k);
-                exp_temp_K = tbl.temp_K(k);
-                exp_pressure_hPa = tbl.pressure_hPa(k);
-                exp_wvd_gm3 = tbl.wvd_gm3(k);
-                exp_n = tbl.n(k);
-
-                [act_temp_K, act_pressure_hPa, act_wvd_gm3, act_n] = ...
-                    testCase.ITURP619.p835_std_atm_profiles(height_km,31);
-
-                %fprintf("%.10f, %.10f, %.10f, %.10f\n", act_temp_K, act_pressure_hPa, act_wvd_gm3, act_n);
-
-                testCase.verifyEqual(act_temp_K,      exp_temp_K,      "AbsTol", absTol, ...
-                    sprintf("Row %d: height_km=%.6g (temp_K)", k, height_km));
-                testCase.verifyEqual(act_pressure_hPa, exp_pressure_hPa, "AbsTol", absTol, ...
-                    sprintf("Row %d: height_km=%.6g (pressure_hPa)",k, height_km));
-                testCase.verifyEqual(act_wvd_gm3,     exp_wvd_gm3,     "AbsTol", absTol, ...
-                    sprintf("Row %d: height_km=%.6g (wvd_gm3)", k, height_km));
-                testCase.verifyEqual(act_n,           exp_n,           "AbsTol", absTol, ...
-                    sprintf("Row %d: height_km=%.6g (n)", k, height_km));
-            end
+            testCase.p835_profile_validation_helper('p835_mid_latitude_summer_reference.csv', 31);
         end
         function p835_mid_latitude_winter_reference_validation(testCase)
-            % Test: p835_mid_latitude_winter_reference_validation
-            % Validates p835_mid_latitude_winter_reference() against known values.
-            csvPath = fullfile(fileparts(mfilename('fullpath')), "testdata", ...
-                "p835_mid_latitude_winter_reference.csv");
-
-            tbl = readtable(csvPath);
-
-            req = ["height_km","temp_K","pressure_hPa","wvd_gm3","n"];
-
-            testCase.verifyTrue(all(ismember(req, string(tbl.Properties.VariableNames))), ...
-                "CSV missing required columns.");
-
-            absTol = 1e-7;
-
-            for k = 1:height(tbl)
-
-                height_km = tbl.height_km(k);
-                exp_temp_K = tbl.temp_K(k);
-                exp_pressure_hPa = tbl.pressure_hPa(k);
-                exp_wvd_gm3 = tbl.wvd_gm3(k);
-                exp_n = tbl.n(k);
-
-                [act_temp_K, act_pressure_hPa, act_wvd_gm3, act_n] = ...
-                    testCase.ITURP619.p835_std_atm_profiles(height_km,31);
-
-                %fprintf("%.10f, %.10f, %.10f, %.10f\n", act_temp_K, act_pressure_hPa, act_wvd_gm3, act_n);
-
-                testCase.verifyEqual(act_temp_K,      exp_temp_K,      "AbsTol", absTol, ...
-                    sprintf("Row %d: height_km=%.6g (temp_K)", k, height_km));
-                testCase.verifyEqual(act_pressure_hPa, exp_pressure_hPa, "AbsTol", absTol, ...
-                    sprintf("Row %d: height_km=%.6g (pressure_hPa)",k, height_km));
-                testCase.verifyEqual(act_wvd_gm3,     exp_wvd_gm3,     "AbsTol", absTol, ...
-                    sprintf("Row %d: height_km=%.6g (wvd_gm3)", k, height_km));
-                testCase.verifyEqual(act_n,           exp_n,           "AbsTol", absTol, ...
-                    sprintf("Row %d: height_km=%.6g (n)", k, height_km));
-            end
+            testCase.p835_profile_validation_helper('p835_mid_latitude_winter_reference.csv', 31);
         end
         function p835_high_altitude_summer_reference_validation(testCase)
-            % Test: p835_high_altitude_summer_reference_validation
-            % Validates p835_high_altitude_summer_reference() against known values.
-            csvPath = fullfile(fileparts(mfilename('fullpath')), "testdata", ...
-                "p835_high_altitude_summer_reference.csv");
-
-            tbl = readtable(csvPath);
-
-            req = ["height_km","temp_K","pressure_hPa","wvd_gm3","n"];
-
-            testCase.verifyTrue(all(ismember(req, string(tbl.Properties.VariableNames))), ...
-                "CSV missing required columns.");
-
-            absTol = 1e-7;
-
-            for k = 1:height(tbl)
-
-                height_km = tbl.height_km(k);
-                exp_temp_K = tbl.temp_K(k);
-                exp_pressure_hPa = tbl.pressure_hPa(k);
-                exp_wvd_gm3 = tbl.wvd_gm3(k);
-                exp_n = tbl.n(k);
-
-                [act_temp_K, act_pressure_hPa, act_wvd_gm3, act_n] = ...
-                    testCase.ITURP619.p835_std_atm_profiles(height_km,41);
-
-                %fprintf("%.10f, %.10f, %.10f, %.10f\n", act_temp_K, act_pressure_hPa, act_wvd_gm3, act_n);
-
-                testCase.verifyEqual(act_temp_K,      exp_temp_K,      "AbsTol", absTol, ...
-                    sprintf("Row %d: height_km=%.6g (temp_K)", k, height_km));
-                testCase.verifyEqual(act_pressure_hPa, exp_pressure_hPa, "AbsTol", absTol, ...
-                    sprintf("Row %d: height_km=%.6g (pressure_hPa)",k, height_km));
-                testCase.verifyEqual(act_wvd_gm3,     exp_wvd_gm3,     "AbsTol", absTol, ...
-                    sprintf("Row %d: height_km=%.6g (wvd_gm3)", k, height_km));
-                testCase.verifyEqual(act_n,           exp_n,           "AbsTol", absTol, ...
-                    sprintf("Row %d: height_km=%.6g (n)", k, height_km));
-            end
+            testCase.p835_profile_validation_helper('p835_high_altitude_summer_reference.csv', 41);
         end
         function p835_high_altitude_winter_reference_validation(testCase)
-            % Test: p835_high_altitude_winter_reference_validation
-            % Validates p835_high_altitude_winter_reference() against known values.
-            csvPath = fullfile(fileparts(mfilename('fullpath')), "testdata", ...
-                "p835_high_altitude_winter_reference.csv");
+            testCase.p835_profile_validation_helper('p835_high_altitude_winter_reference.csv', 42);
+        end
+    end
 
+    methods (Access = private)
+        function p835_profile_validation_helper(testCase, csvFile, profileType)
+            % Helper to validate p835 profile against known values in a CSV.
+            csvPath = fullfile(fileparts(mfilename('fullpath')), "testdata", csvFile);
             tbl = readtable(csvPath);
-
             req = ["height_km","temp_K","pressure_hPa","wvd_gm3","n"];
-
             testCase.verifyTrue(all(ismember(req, string(tbl.Properties.VariableNames))), ...
                 "CSV missing required columns.");
-
             absTol = 1e-7;
-
             for k = 1:height(tbl)
-
                 height_km = tbl.height_km(k);
                 exp_temp_K = tbl.temp_K(k);
                 exp_pressure_hPa = tbl.pressure_hPa(k);
                 exp_wvd_gm3 = tbl.wvd_gm3(k);
                 exp_n = tbl.n(k);
-
                 [act_temp_K, act_pressure_hPa, act_wvd_gm3, act_n] = ...
-                    testCase.ITURP619.p835_std_atm_profiles(height_km,42);
-
-                %fprintf("%.10f, %.10f, %.10f, %.10f\n", act_temp_K, act_pressure_hPa, act_wvd_gm3, act_n);
-
+                    testCase.ITURP619.p835_std_atm_profiles(height_km, profileType);
                 testCase.verifyEqual(act_temp_K,      exp_temp_K,      "AbsTol", absTol, ...
                     sprintf("Row %d: height_km=%.6g (temp_K)", k, height_km));
                 testCase.verifyEqual(act_pressure_hPa, exp_pressure_hPa, "AbsTol", absTol, ...
