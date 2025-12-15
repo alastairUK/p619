@@ -297,6 +297,38 @@ classdef P619Tests < matlab.unittest.TestCase
         function p835_high_latitude_winter_reference_validation(testCase)
             testCase.p835_profile_validation_helper('p835_high_latitude_winter_reference.csv', 42);
         end
+
+        function P676(testCase)
+            % Test: get_interp2_Nwet_Annual_time_location_validation
+            % Validates get_interp2_Nwet_Annual_time_location() against known values.
+            Hs = 500.0;
+            He = 0;
+            fGHz = 28;
+            phi_e = 30;
+            phi_s = 0;
+            Dphi = 0;
+            exp_Ag = 0.47081173;
+            absTol = 1e-7;
+
+            Hs = min(100, Hs); % ISSUE P.619 does not explicitly limit the upper height, but P.676 and standard atmospheres do
+
+            h_atm = testCase.ITURP619.p676_slant_path_geometry16(He, Hs);
+            atm_type = 1; % standard atmosphere
+            e2sflag = true;
+            % compute the midpoint for each layer
+
+            hmid = 0.5*( h_atm(1:end-1) + h_atm(2:end));
+
+            % compute T, P, rho, n profiles at midpoint of each layer
+
+            [T, P, rho, n] = testCase.ITURP619.p835_std_atm_profiles(hmid, atm_type);
+
+            Ag = testCase.ITURP619.atm_attenuation_E2s(fGHz, He, Hs, phi_e, phi_s, Dphi, h_atm, rho, T, P, n, true, atm_type);
+
+            msg = sprintf("Case 1");
+
+            testCase.verifyEqual(Ag, exp_Ag, "AbsTol", absTol, msg);
+        end
     end
 
     methods (Access = private)

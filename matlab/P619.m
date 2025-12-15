@@ -1301,39 +1301,40 @@ classdef P619
                     % within the beamwidth of the space station antenna. If yes,
                     % proceed to Step 3, otherwise stop
 
-                    if abs(phi_cs - phi_s) > Dphi_s/2.0
-
-
-                            % TODO: Check if this combines well with other
-                            % loss mechanisms
-                        Ag = 1e20;
-
-                        return
-
-                    end
+                    % if abs(phi_cs - phi_s) > Dphi_s/2.0
+                    % 
+                    % 
+                    %         % TODO: Check if this combines well with other
+                    %         % loss mechanisms
+                    %     Ag = 1e20;
+                    % 
+                    %     return
+                    % 
+                    % end
 
                     % Step 3: Determine if the line-of-sight between the two
                     % antennas is free from ducting. If a standard atmosphere
                     % is being used, ducting does not occur
 
-                    if (~std_atm)
+                    % if (~std_atm)
+                    % 
+                    %     eq43 = ((rs * ns) ./ (r .* n) ) * cosd(phi_s);
+                    % 
+                    %     kk = find( eq43 >= 1, 1);
+                    % 
+                    %     if (~isempty( kk ))
+                    % 
+                    %         % TODO: Check if this combines well with other
+                    %         % loss mechanisms
+                    %         Ag = 1e20;
+                    % 
+                    %         return
+                    %     end
+                    % 
+                    % end
+                end
 
-                        eq43 = ((rs * ns) ./ (r .* n) ) * cosd(phi_s);
-
-                        kk = find( eq43 >= 1, 1);
-
-                        if (~isempty( kk ))
-
-                            % TODO: Check if this combines well with other
-                            % loss mechanisms
-                            Ag = 1e20;
-
-                            return
-                        end
-
-                    end
-
-                else % skip Steps 1 to 3 and go to Step 4
+                % else % skip Steps 1 to 3 and go to Step 4
 
                     % Step 4: Calculate the length of the slant path lns within
                     % each layer from equation (34)
@@ -1361,9 +1362,7 @@ classdef P619
 
                     return
 
-                end
-
-
+                % end
             else % Case 2: phi_e < 0
 
                 % In this case, the attenuation in equation (29) can be
@@ -2254,6 +2253,8 @@ classdef P619
 
             iL = floor(100*log(1e4*hL*(exp(0.01)-1)+1)+1);           %(16a)
             iU =  ceil(100*log(1e4*hU*(exp(0.01)-1)+1)+1);           %(16b)
+
+            iU = min(iU, 922);
 
             n = iU - iL + 1;
 
