@@ -279,6 +279,106 @@ classdef P619Tests < matlab.unittest.TestCase
             end
         end
 
+        function p452_path_profile_approval(testCase)
+            % p452_path_profile_approval
+            % Generates deterministic random path profiles and calculates
+            % horizon parameters using P619.p452_path_profile.
+            %
+            % Outputs a CSV compatible with the C++ Rec452Tests reader:
+            % ID, h_ts, ae, Expected_Theta, Expected_Dist, NumPoints, d0, h0, d1, h1...
+            
+            obj = testCase.ITURP619;
+            
+            % 1. Setup Deterministic Randomness
+            seed = 54321;
+            rng(seed, "twister");
+            
+            num_tests = 500;
+            
+            % 2. Setup File Paths
+            testDir = fileparts(which('P619Tests'));
+            outDir = fullfile(testDir, 'testdata');
+            if exist(outDir, 'dir') ~= 7
+                mkdir(outDir);
+            end
+            
+            approvedFile = fullfile(outDir, 'p452_horizon_approved.csv');
+            currentFile  = fullfile(outDir, 'p452_horizon_current.csv');
+            
+            % 3. Generate Data and Write to Current File
+            fid = fopen(currentFile, 'w');
+            % Use onCleanup to ensure file closes even if test fails midway
+            c = onCleanup(@() fclose(fid));
+            
+            % Header matching C++ reader expectation
+            fprintf(fid, 'ID,h_ts,ae,Expected_Theta,Expected_Dist,NumPoints,ProfileData\n');
+            
+            for i = 1:num_tests
+                % --- Generate Inputs ---
+                
+                % Number of points (between 5 and 100)
+                n = randi([5, 100]);
+                
+                % Total distance (10km to 200km)
+                d_total = 10 + (190 * rand());
+                
+                % Create distance vector (uniform spacing)
+                d = linspace(0, d_total, n);
+                
+                % Create height vector (random terrain 0-500m with a random hill)
+                % This ensures the horizon isn't always the last point
+                base_h = 500 * rand(1, n);
+                hill_center = randi([2, n-1]);
+                hill_height = 200 * rand();
+                % Gaussian hill
+                h = base_h + hill_height * exp(-((1:n) - hill_center).^2 / 10);
+                
+                % Tx Height (amsl)
+                h_ts = h(1) + 10 + (50 * rand()); 
+                
+                % Effective Earth Radius (standard to super-refractive)
+                ae = 6371 * (1 + 3 * rand()); 
+                
+                % --- Calculate (The Oracle) ---
+                [d_hoz, th_hoz] = obj.p452_path_profile(d, h, h_ts, ae);
+                
+                % Handle potential empty returns (though unlikely with this generation)
+                if isempty(d_hoz), d_hoz = 0; end
+                if isempty(th_hoz), th_hoz = 0; end
+                
+                % --- Write Row ---
+                % Fixed columns
+                fprintf(fid, '%d,%.6f,%.6f,%.6f,%.6f,%d', i, h_ts, ae, th_hoz, d_hoz, n);
+                
+                % Variable profile columns (d, h pairs)
+                for k = 1:n
+                    fprintf(fid, ',%.6f,%.6f', d(k), h(k));
+                end
+                fprintf(fid, '\n');
+            end
+            
+            % Force close before reading back
+            clear c; 
+            
+            % 4. Approval Logic
+            if exist(approvedFile, 'file') ~= 2
+                % If approved file doesn't exist, create it from current
+                copyfile(currentFile, approvedFile);
+                warning('Approved file did not exist. Created: %s', approvedFile);
+                testCase.verifyTrue(true);
+                return;
+            end
+            
+            % Read both files as text to ensure exact match
+            currentText = fileread(currentFile);
+            approvedText = fileread(approvedFile);
+            
+            % Verify
+            testCase.verifyEqual(currentText, approvedText, ...
+                'Generated horizon data does not match the approved file. Logic may have changed.');
+        end
+
+
         function p835_reference_atmosphere_validation(testCase)
             testCase.p835_profile_validation_helper('p835_reference_atmosphere.csv', 1);
         end
@@ -324,7 +424,7 @@ classdef P619Tests < matlab.unittest.TestCase
                     sprintf("Row %d: height_km=%.6g (wvd_gm3)", k, height_km));
                 testCase.verifyEqual(act_n,           exp_n,           "AbsTol", absTol, ...
                     sprintf("Row %d: height_km=%.6g (n)", k, height_km));
-             end
+            end
         end
     end
 
